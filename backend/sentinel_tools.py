@@ -58,7 +58,8 @@ def judge_threat_level(risk_score: int, anomalies: list):
         return {"verdict": "LOW", "action_required": "LOG_ONLY"}
 
 # --- TOOL 3: ENFORCEMENT OFFICER ---
-def execute_enforcement_protocol(user_id: str, verdict: str):
+# RENAMED to match server.py
+def execute_enforcement(user_id: str, verdict: str):
     """
     ENFORCER: Executes the Kill Switch.
     """
@@ -85,7 +86,8 @@ def execute_enforcement_protocol(user_id: str, verdict: str):
     return {"status": "SKIPPED", "reason": "Verdict below threshold"}
 
 # --- TOOL 4: COMPLIANCE CLERK ---
-def generate_compliance_package(user_id: str, enforcement_data: dict):
+# RENAMED to match server.py
+def generate_compliance_report(user_id: str, enforcement_status: str):
     """
     CLERK: Generates the Jira Ticket and Audit Report.
     """
@@ -117,6 +119,7 @@ if __name__ == "__main__":
     log = '{"user_id": "user_404", "location": "Russia", "timestamp": "midnight"}'
     analysis = analyze_login_event(log)
     judgment = judge_threat_level(analysis["risk_score"], analysis["anomalies"])
-    enforcement = execute_enforcement_protocol(analysis["user_id"], judgment["verdict"])
-    compliance = generate_compliance_package(analysis["user_id"], enforcement)
+    # These calls now match the renamed functions
+    enforcement = execute_enforcement(analysis["user_id"], judgment["verdict"])
+    compliance = generate_compliance_report(analysis["user_id"], enforcement["status"])
     print(compliance)
