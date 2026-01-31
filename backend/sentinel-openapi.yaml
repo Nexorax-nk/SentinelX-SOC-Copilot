@@ -1,45 +1,65 @@
 openapi: 3.0.0
 info:
-  title: SentinelX Enforcement API
-  description: API for SentinelX Security Agent to analyze risks and lock accounts.
-  version: 1.0.0
+  title: SentinelX Squad API
+  description: Multi-Agent Security Automation API for SentinelX.
+  version: 2.1.0
 servers:
-  - url:  https://wild-ties-ring.loca.lt  # We will replace this later
+  # ⚠️ REPLACE THIS WITH YOUR CURRENT NGROK URL (e.g. https://abc-123.ngrok-free.app)
+  - url: https://YOUR-URL-HERE.loca.lt
 paths:
-  /analyze:
+  /detective/analyze:
     post:
-      summary: Analyze Login Risk
-      operationId: analyze_login_risk
+      summary: Detective Agent - Log Analysis
+      operationId: analyze_login_event
+      security: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                ip_address:
+                log_json:
                   type: string
-                location:
-                  type: string
-                user_id:
-                  type: string
+                  description: The raw security log or JSON string to analyze.
+                  example: '{"user_id": "user_404", "location": "Russia", "ip": "192.168.1.5"}'
       responses:
         '200':
-          description: Risk analysis result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  risk_level:
-                    type: string
-                  recommendation:
-                    type: string
+          description: Analysis successful
 
-  /lockdown:
+  /judge/evaluate:
     post:
-      summary: Execute Account Lockdown
-      operationId: execute_lockdown
+      summary: Threat Judge - Risk Evaluation
+      operationId: judge_threat_level
+      security: []
       requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                risk_score:
+                  type: integer
+                  description: A score from 0 to 100 calculated by the Detective.
+                  example: 95
+                anomalies:
+                  type: array
+                  items:
+                    type: string
+                  description: List of detected issues.
+                  example: ["Impossible Travel", "Blacklisted IP"]
+      responses:
+        '200':
+          description: Verdict delivered
+
+  /enforcer/execute:
+    post:
+      summary: Enforcement Officer - Kill Switch
+      operationId: execute_enforcement
+      security: []
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -47,17 +67,42 @@ paths:
               properties:
                 user_id:
                   type: string
-                reason:
+                  example: "user_404"
+                verdict:
                   type: string
+                  enum: ["CRITICAL", "HIGH", "LOW"]
+                  example: "CRITICAL"
       responses:
         '200':
-          description: Lockdown status
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  audit_ticket:
-                    type: string
+          description: Enforcement executed (or skipped)
+
+  /clerk/report:
+    post:
+      summary: Compliance Clerk - Audit Generation
+      operationId: generate_compliance_report
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: "user_404"
+                enforcement_status:
+                  type: string
+                  description: The result from the Enforcer agent.
+                  example: "SUCCESS"
+      responses:
+        '200':
+          description: Report generated
+
+# This component prevents "Validation Error 401" on some IBM platforms
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY

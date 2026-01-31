@@ -1,64 +1,122 @@
 import json
+import random
 from datetime import datetime
 
-# --- MOCK DATABASE (Keys are now all lowercase for safety) ---
+# --- MOCK DATABASE ---
 DATABASE = {
-    "user_101": {"name": "Alice Admin", "status": "ACTIVE", "role": "admin"},
-    "user_404": {"name": "John Doe", "status": "ACTIVE", "role": "viewer"},
-    "blocked_ips": []
+    "user_101": {"name": "Alice Admin", "status": "ACTIVE", "role": "admin", "tokens": ["tok_123", "tok_456"]},
+    "user_404": {"name": "John Doe", "status": "ACTIVE", "role": "viewer", "tokens": ["tok_999"]},
+    "blocked_ips": [],
+    "jira_tickets": []
 }
 
-# --- THE TOOLS ---
-
-def analyze_login_risk(ip_address: str, location: str, user_id: str):
+# --- TOOL 1: SENTINEL DETECTIVE ---
+def analyze_login_event(log_json: str):
     """
-    Analyzes a login attempt for risk factors.
+    DETECTIVE: Analyzes raw logs for anomalies.
+    Input: JSON string of the log.
     """
-    # FIX: Convert to lowercase to match database
-    clean_user_id = user_id.strip().lower() 
-    
-    print(f"🕵️ SENTINEL DETECTIVE: Analyzing login for {clean_user_id} ({user_id}) from {location}...")
-    
-    # Simulation Logic
-    if location.lower() in ["russia", "north korea"] or ip_address.startswith("192.168.66"):
-        return {
-            "risk_score": 95,
-            "risk_level": "CRITICAL",
-            "reason": "Geo-fencing violation (Restricted Country)",
-            "recommendation": "IMMEDIATE_LOCKDOWN"
-        }
-    
-    return {"risk_score": 10, "risk_level": "LOW", "status": "Safe"}
-
-def execute_lockdown(user_id: str, reason: str):
-    """
-    ENFORCEMENT TOOL: Locks the user account.
-    """
-    # FIX: Convert to lowercase to match database
-    clean_user_id = user_id.strip().lower()
-    
-    print(f"🚨 SENTINEL ENFORCER: Initiating LOCKDOWN for {clean_user_id}...")
-    
-    if clean_user_id in DATABASE:
-        DATABASE[clean_user_id]["status"] = "LOCKED"
+    print(f"🕵️ DETECTIVE AGENT: Scanning log stream...")
+    try:
+        data = json.loads(log_json) if isinstance(log_json, str) else log_json
+        location = data.get("location", "Unknown")
+        user = data.get("user_id", "Unknown")
         
-        ticket_id = f"JIRA-{int(datetime.now().timestamp())}"
+        # Risk Logic
+        risk_score = 0
+        reasons = []
         
+        if location.lower() in ["russia", "north korea"]:
+            risk_score += 90
+            reasons.append("Geo-fencing Violation")
+        
+        if "midnight" in str(data.get("timestamp", "")).lower():
+             risk_score += 20
+             reasons.append("Anomalous Time")
+
         return {
-            "status": "SUCCESS",
-            "action_taken": f"User {clean_user_id} account LOCKED. Session Killed.",
-            "audit_ticket": ticket_id,
-            "timestamp": datetime.now().isoformat()
+            "analysis_id": f"ANA-{random.randint(1000,9999)}",
+            "user_id": user,
+            "risk_score": risk_score,
+            "anomalies": reasons
         }
+    except Exception as e:
+        return {"error": str(e)}
+
+# --- TOOL 2: THREAT JUDGE ---
+def judge_threat_level(risk_score: int, anomalies: list):
+    """
+    JUDGE: Decides the severity based on the Detective's findings.
+    """
+    print(f"⚖️ JUDGE AGENT: Evaluating Risk Score {risk_score}...")
+    
+    if risk_score >= 90:
+        return {"verdict": "CRITICAL", "action_required": "IMMEDIATE_LOCKDOWN"}
+    elif risk_score >= 50:
+        return {"verdict": "HIGH", "action_required": "ENHANCED_MONITORING"}
     else:
-        # Debugging print to see what went wrong
-        print(f"❌ ERROR: User ID '{clean_user_id}' not found in DB keys: {list(DATABASE.keys())}")
-        return {"status": "ERROR", "message": f"User ID {clean_user_id} not found."}
+        return {"verdict": "LOW", "action_required": "LOG_ONLY"}
 
-def get_audit_status(user_id: str):
-    # FIX: Convert to lowercase
-    return DATABASE.get(user_id.strip().lower(), {"status": "UNKNOWN"})
+# --- TOOL 3: ENFORCEMENT OFFICER ---
+def execute_enforcement_protocol(user_id: str, verdict: str):
+    """
+    ENFORCER: Executes the Kill Switch.
+    """
+    clean_uid = user_id.strip().lower()
+    print(f"👮 ENFORCER AGENT: Executing Protocol for {clean_uid} (Verdict: {verdict})...")
+    
+    if verdict == "CRITICAL":
+        if clean_uid in DATABASE:
+            # 1. Lock Account
+            DATABASE[clean_uid]["status"] = "LOCKED"
+            # 2. Revoke Tokens
+            revoked_tokens = DATABASE[clean_uid]["tokens"]
+            DATABASE[clean_uid]["tokens"] = []
+            
+            return {
+                "status": "SUCCESS",
+                "actions": [
+                    f"Account {clean_uid} LOCKED",
+                    f"Revoked {len(revoked_tokens)} active tokens",
+                    "IP Address added to Blacklist"
+                ],
+                "enforcement_time": datetime.now().isoformat()
+            }
+    return {"status": "SKIPPED", "reason": "Verdict below threshold"}
 
+# --- TOOL 4: COMPLIANCE CLERK ---
+def generate_compliance_package(user_id: str, enforcement_data: dict):
+    """
+    CLERK: Generates the Jira Ticket and Audit Report.
+    """
+    print(f"📝 COMPLIANCE AGENT: Generating Paperwork...")
+    
+    # 1. Create Jira Ticket
+    ticket_id = f"SEC-{random.randint(10000,99999)}"
+    ticket = {
+        "id": ticket_id,
+        "summary": f"Security Incident: {user_id}",
+        "severity": "CRITICAL",
+        "assignee": "SOC_Team"
+    }
+    DATABASE["jira_tickets"].append(ticket)
+    
+    # 2. Send Alert (Mock)
+    email_status = f"Alert sent to ciso@company.com re: {ticket_id}"
+    
+    return {
+        "audit_report_id": f"AUDIT-{datetime.now().strftime('%Y%m%d')}-{user_id}",
+        "jira_ticket": ticket_id,
+        "communications": [email_status],
+        "final_status": "COMPLIANT"
+    }
+
+# --- LOCAL TEST ---
 if __name__ == "__main__":
-    # Test
-    print(execute_lockdown("User_404", "Test"))
+    # Simulate the chain
+    log = '{"user_id": "user_404", "location": "Russia", "timestamp": "midnight"}'
+    analysis = analyze_login_event(log)
+    judgment = judge_threat_level(analysis["risk_score"], analysis["anomalies"])
+    enforcement = execute_enforcement_protocol(analysis["user_id"], judgment["verdict"])
+    compliance = generate_compliance_package(analysis["user_id"], enforcement)
+    print(compliance)
