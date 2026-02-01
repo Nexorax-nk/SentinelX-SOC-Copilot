@@ -1,6 +1,6 @@
-# SentinelX — Agentic SOC Copilot 🚨
+# SentinelX — Agentic Enforcement Squad for Security Operations
 
-SentinelX is an autonomous Security Operations Center (SOC) Copilot built using **IBM watsonx Orchestrate**.
+SentinelX is an autonomous Security Enforcement Squad built using **IBM watsonx Orchestrate**.
 
 It investigates security incidents, classifies threat severity, and enforces remediation actions in real time.
 
