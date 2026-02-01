@@ -182,7 +182,7 @@ export default function SentinelIntercept() {
                     <div className="absolute w-100 h-100 border border-emerald-500/10 rounded-full"></div>
                     <div className="absolute w-50 h-50 border border-emerald-500/10 rounded-full"></div>
                     
-                    <Search className="w-16 h-16 text-emerald-500/50 mb-6 relative z-10 animate-pulse" />
+                    <Search className="w-16 h-16 text-emerald-500 mb-6 relative z-10 animate-pulse" />
                     <p className="text-emerald-500 tracking-[0.2em] font-mono text-sm relative z-10">AWAITING TELEMETRY...</p>
                     
                     <div className="flex gap-8 text-[10px] text-slate-600 font-mono mt-8 relative z-10">

@@ -5,7 +5,7 @@ info:
   version: 2.1.0
 servers:
   # ⚠️ REPLACE THIS WITH YOUR CURRENT NGROK URL (e.g. https://abc-123.ngrok-free.app)
-  - url: https://hip-results-add.loca.lt
+  - url: https://fair-oranges-matter.loca.lt
 paths:
   /detective/analyze:
     post:
