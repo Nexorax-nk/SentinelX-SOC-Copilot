@@ -1,0 +1,9 @@
+request 
+rich
+python-dotenv
+apikey=TDdNV2tKd0JNdExQbW9TWlZDQ186Szc2YVBnNmE5TloxNUdBeU0tT1NmZw==
+
+
+TDdNV2tKd0JNdExQbW9TWlZDQ186Szc2YVBnNmE5TloxNUdBeU0tT1NmZw==
+
+https://sentinel-x-d9fb65.kb.us-central1.gcp.elastic.cloud/app/agent_builder
