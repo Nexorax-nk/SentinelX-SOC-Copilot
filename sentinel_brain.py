@@ -68,40 +68,46 @@ def ask_agent(agent_id, message):
 def process_security_log(raw_log):
     console.print(Panel(f"[bold white]{raw_log}[/bold white]", title="[bold cyan]Incoming Telemetry[/bold cyan]", border_style="cyan"))
     
-    # STAGE 1: THREAT TRIAGE
+    # --- STAGE 1: TRIAGE ---
     console.print("\n[bold dark_orange]>> [STAGE 1] Initiating Threat Triage Engine...[/bold dark_orange]")
     triage_data = ask_agent("sentinel-x-triage", raw_log)
     
     if "error" in triage_data:
-        console.print("[bold red]Halting pipeline due to Agent 1 error.[/bold red]")
         return
         
     score = triage_data.get("confidence_score", 0)
     threat = triage_data.get("threat_type", "Unknown")
     rec = triage_data.get("recommendation", "MONITOR")
+    source_ip = triage_data.get("source_ip", "Unknown")
     
     console.print(f"[bold red]🚨 DETECTED:[/bold red] {threat} (Confidence: {score}%)")
     
-    # STAGE 2: ACTIVE RESPONSE ENFORCEMENT
+    # --- STAGE 2: ENFORCEMENT ---
     if rec == "BLOCK":
         console.print(f"\n[bold dark_orange]>> [STAGE 2] Routing to Active Response Enforcer...[/bold dark_orange]")
-        enforcer_data = ask_agent("active-response-enforcer", triage_data)
         
-        if "error" in enforcer_data: return
+        # FIX: Instead of sending the whole JSON, send a clear instruction string
+        enforcer_instruction = f"The Triage Engine detected a {threat} from IP {source_ip} and recommends a BLOCK. Execute the enforcement action."
+        enforcer_data = ask_agent("active-response-enforcer", enforcer_instruction)
+        
+        if "error" in enforcer_data:
+            return
 
         console.print(f"[bold green]🛡️ ENFORCEMENT SUCCESS:[/bold green] {enforcer_data.get('action_taken')}")
         
-        # STAGE 3: COMPLIANCE & AUDITING
+        # --- STAGE 3: COMPLIANCE ---
         console.print(f"\n[bold dark_orange]>> [STAGE 3] Routing to Compliance Audit Tracker...[/bold dark_orange]")
-        clerk_data = ask_agent("compliance-audit-tracker", {"triage": triage_data, "enforcement": enforcer_data})
+        
+        # Pass both results as a simple summary string to Agent 3
+        clerk_instruction = f"Triage Result: {json.dumps(triage_data)}. Enforcement Result: {json.dumps(enforcer_data)}. Generate the formal ticket."
+        clerk_data = ask_agent("compliance-audit-tracker", clerk_instruction)
         
         if "error" not in clerk_data:
             ticket_str = json.dumps(clerk_data, indent=2)
-            console.print(Panel(f"[bold green]{ticket_str}[/bold green]", title=f"[bold cyan]Jira Ticket Generated: {clerk_data.get('incident_id')}[/bold cyan]", border_style="green"))
+            console.print(Panel(f"[bold green]{ticket_str}[/bold green]", title=f"Jira Ticket: {clerk_data.get('incident_id')}", border_style="green"))
 
     else:
         console.print(f"\n[bold green]✅ No critical action required. Status: {rec}[/bold green]")
-
 if __name__ == "__main__":
     console.print("[bold red]=== 🦅 SENTINEL-X MULTI-AGENT SOC ONLINE ===[/bold red]\n")
     sample_log = '[24/Feb/2026:19:34:12 +0000] "POST /login HTTP/1.1" 401 534 "-" src_ip="185.15.58.22" msg="Failed password for root" attempts=450 geo="RU"'
