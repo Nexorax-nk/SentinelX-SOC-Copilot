@@ -251,7 +251,7 @@ export default function SOCTerminal() {
               
               {step >= 5 && results?.triage && (
                 <div className="pl-5 my-3 border-l-2 border-[#ff4d00] bg-gradient-to-r from-[#ff4d00]/10 to-transparent py-4 pr-4 rounded-r-lg">
-                  <span className="text-white font-black tracking-widest bg-[#ff4d00] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(255,77,0,0.4)]">🚨 VERDICT: {results.triage.threat_type}</span><br/>
+                  <span className="text-white font-black tracking-widest bg-[#ff4d00] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(255,77,0,0.4)]">&gt;&gt; VERDICT: {results.triage.threat_type}</span><br/>
                   <div className="mt-3 text-zinc-400 text-[11px] uppercase font-bold tracking-widest flex items-center gap-2">
                     AI Confidence Matrix: <span className="text-[#ff4d00] text-sm font-black bg-black px-2 py-0.5 rounded border border-[#ff4d00]/30">{results.triage.confidence_score}%</span>
                   </div>
@@ -283,7 +283,7 @@ export default function SOCTerminal() {
               
               {step >= 8 && results?.enforcer && (
                 <div className="pl-5 my-3 border-l-2 border-[#ff003c] bg-gradient-to-r from-[#ff003c]/10 to-transparent py-4 pr-4 rounded-r-lg">
-                  <span className="text-white font-black tracking-widest bg-[#ff003c] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(255,0,60,0.4)]">🛡️ REMEDIATION AUTHORIZED</span><br/>
+                  <span className="text-white font-black tracking-widest bg-[#ff003c] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(255,0,60,0.4)]">&gt;&gt; REMEDIATION AUTHORIZED</span><br/>
                   <div className="mt-3">
                     <pre className="text-zinc-300 font-mono whitespace-pre-wrap leading-relaxed text-[11.5px]">
                       {results.enforcer.action_taken}
@@ -315,7 +315,7 @@ export default function SOCTerminal() {
               
               {step >= 11 && results?.compliance && (
                 <div className="pl-5 my-3 border-l-2 border-[#00e5ff] bg-gradient-to-r from-[#00e5ff]/10 to-transparent py-4 pr-4 rounded-r-lg">
-                  <span className="text-white font-black tracking-widest bg-[#00e5ff] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(0,229,255,0.4)]">📋 AUDIT LEDGER UPDATED</span><br/>
+                  <span className="text-white font-black tracking-widest bg-[#00e5ff] text-black px-2.5 py-1 rounded-sm text-[10px] uppercase shadow-[0_0_10px_rgba(0,229,255,0.4)]">&gt;&gt; AUDIT LEDGER UPDATED</span><br/>
                   <div className="mt-3 mb-3 text-zinc-500 text-[10px] font-bold tracking-widest uppercase flex items-center gap-2">
                     INCIDENT_REF: <span className="text-[#00e5ff] font-mono bg-black px-2 py-0.5 rounded border border-[#00e5ff]/30 shadow-[0_0_10px_rgba(0,229,255,0.1)]">{results.compliance.incident_id || `INC-${(Math.random() * 100000).toFixed(0)}-SEC`}</span>
                   </div>
