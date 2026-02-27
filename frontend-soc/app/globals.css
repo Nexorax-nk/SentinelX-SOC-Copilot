@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
+/* 1. Define Raw CSS Variables (Stealth SaaS Palette) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000; /* True, absolute pitch black */
+  --foreground: #ededed;
+  
+  /* Sentinel-X High-Contrast Surgical Accents */
+  --soc-orange: #ff4d00; 
+  --soc-red: #ff003c;
+  --soc-cyan: #00e5ff;
+  --soc-green: #00ffcc;
+  --soc-dark: #030303;
+  --soc-card: #050505;
 }
 
+/* 2. Map to Tailwind v4 Theme */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  
+  /* Injecting our custom colors into Tailwind utility classes */
+  --color-soc-orange: var(--soc-orange);
+  --color-soc-red: var(--soc-red);
+  --color-soc-cyan: var(--soc-cyan);
+  --color-soc-green: var(--soc-green);
+  --color-soc-dark: var(--soc-dark);
+  --color-soc-card: var(--soc-card);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* 3. Base Styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background-color: #000000; /* Force true black rendering */
+}
+
+/* 4. Enterprise SaaS Utilities */
+@layer utilities {
+  /* Sharp tactical dot matrix (Replaces the chunky arcade lines) */
+  .bg-tactical-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  
+  /* Subtle glass effects for floating UI elements */
+  .glass-panel {
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* 5. Ultra-Sharp Stealth Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;  /* Razor thin */
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a; /* Muted zinc that hides in the background */
+  border-radius: 0px;  /* Absolutely no rounded corners - keep it sharp */
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--soc-orange); /* Ignites only when hovered */
 }
